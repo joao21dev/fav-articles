@@ -1,7 +1,27 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../../firebase-config'
 
 const Register = () => {
+  const [registerEmail, setRegisterEmail] = useState('')
+  const [registerPassword, setRegisterPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate()
+
+  const handleRegister = () => {
+    try {
+      setLoading(true)
+      setTimeout(async () => {
+        await createUserWithEmailAndPassword(auth, registerEmail, registerPassword)
+        navigate('/')
+        setLoading(false)
+      }, 1000)
+    } catch (error: any) {
+      console.log(error.message)
+    }
+  }
   return (
     <section className='vh-100'>
       <div className='container py-5 h-100'>
@@ -10,31 +30,50 @@ const Register = () => {
             <div className='card shadow-2-strong' style={{ borderRadius: '1rem' }}>
               <div className='card-body p-5 text-center'>
                 <h3 className='mb-5'>Acessar Fav-Articles</h3>
+                {auth.currentUser?.email}
 
-                <div className='form-outline mb-4'>
-                  <label className='form-label' htmlFor='name'>
-                    Nome
-                  </label>
-                  <input type='text' id='name' className='form-control form-control-lg' />
-                </div>
                 <div className='form-outline mb-4'>
                   <label className='form-label' htmlFor='email'>
                     Email
                   </label>
-                  <input type='email' id='email' className='form-control form-control-lg' />
+                  <input
+                    onChange={(event) => {
+                      setRegisterEmail(event.target.value)
+                    }}
+                    type='email'
+                    id='email'
+                    className='form-control form-control-lg'
+                  />
                 </div>
 
                 <div className='form-outline mb-4'>
                   <label className='form-label' htmlFor='password'>
                     Senha
                   </label>
-                  <input type='password' id='password' className='form-control form-control-lg' />
+                  <input
+                    onChange={(event) => {
+                      setRegisterPassword(event.target.value)
+                    }}
+                    type='password'
+                    id='password'
+                    className='form-control form-control-lg'
+                  />
                 </div>
 
-                <button className='btn btn-primary btn-lg btn-block mb-4' type='submit'>
-                  Criar Conta
+                <button
+                  onClick={handleRegister}
+                  className='btn btn-primary btn-lg btn-block mb-4'
+                  type='submit'
+                >
+                  {!loading && 'Criar Conta'}
+                  {loading && (
+                    <span className='indicator-progress' style={{ display: 'block' }}>
+                      Carregando...{' '}
+                      <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                    </span>
+                  )}
                 </button>
-                <Link to='/'>
+                <Link to='/login'>
                   <div className='link-primary'>Já tem uma conta? Entre</div>
                 </Link>
               </div>
