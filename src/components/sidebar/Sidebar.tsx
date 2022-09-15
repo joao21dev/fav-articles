@@ -1,14 +1,17 @@
 import React, { FC, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { SidebarData } from './SidebarData'
 import Submneu from './Submenu'
+import { signOut } from 'firebase/auth'
+import { auth } from '../../firebase-config'
+import { Button } from 'react-bootstrap'
 
 const Nav = styled.div`
   height: 5rem;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   background-color: #f1f0f0;
 `
@@ -43,12 +46,42 @@ const SidebarWrap = styled.div``
 const Sidebar: FC = () => {
   const [sidebar, setSidebar] = useState(false)
   const showSidebar = () => setSidebar(!sidebar)
+  const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    try {
+      setLoading(true)
+      setTimeout(async () => {
+        await signOut(auth)
+        navigate('/login')
+        setLoading(false)
+      }, 1000)
+    } catch (error: any) {
+      console.log(error.message)
+    }
+  }
+
   return (
     <>
       <Nav>
         <NavIcon onClick={showSidebar} to='#'>
           <AiOutlineMenu color='#fff' />
         </NavIcon>
+        <Button
+          onClick={handleLogout}
+          className='btn btn-danger btn-lg btn-block me-4'
+          type='submit'
+        >
+          {!loading && 'Logout'}
+          {loading && (
+            <span className='indicator-progress' style={{ display: 'block' }}>
+              Carregando...{' '}
+              <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+            </span>
+          )}
+        </Button>
       </Nav>
       <SidebarNav sidebar={sidebar}>
         <SidebarWrap>

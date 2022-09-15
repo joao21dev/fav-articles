@@ -1,7 +1,28 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import React, { useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { auth } from '../../firebase-config'
 
 const Login = () => {
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate()
+
+  const handleLogin = async () => {
+    try {
+      setLoading(true)
+      setTimeout(async () => {
+        await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+        navigate('/')
+        setLoading(false)
+      }, 1000)
+    } catch (error: any) {
+      console.log(error.message)
+    }
+  }
+
   return (
     <section className='vh-100'>
       <div className='container py-5 h-100'>
@@ -12,26 +33,47 @@ const Login = () => {
                 <h3 className='mb-5'>Acessar Fav-Articles</h3>
 
                 <div className='form-outline mb-4'>
-                  <label className='form-label' htmlFor='typeEmailX-2'>
+                  <label className='form-label' htmlFor='email'>
                     Email
                   </label>
-                  <input type='email' id='typeEmailX-2' className='form-control form-control-lg' />
-                </div>
-
-                <div className='form-outline mb-4'>
-                  <label className='form-label' htmlFor='typePasswordX-2'>
-                    Senha
-                  </label>
                   <input
-                    type='password'
-                    id='typePasswordX-2'
+                    onChange={(event) => {
+                      setLoginEmail(event.target.value)
+                    }}
+                    type='email'
+                    id='email'
                     className='form-control form-control-lg'
                   />
                 </div>
 
-                <button className='btn btn-primary btn-lg btn-block mb-4' type='submit'>
-                  Entrar
+                <div className='form-outline mb-4'>
+                  <label className='form-label' htmlFor='password'>
+                    Senha
+                  </label>
+                  <input
+                    onChange={(event) => {
+                      setLoginPassword(event.target.value)
+                    }}
+                    type='password'
+                    id='password'
+                    className='form-control form-control-lg'
+                  />
+                </div>
+
+                <button
+                  onClick={handleLogin}
+                  className='btn btn-primary btn-lg btn-block mb-4'
+                  type='submit'
+                >
+                  {!loading && 'Entrar'}
+                  {loading && (
+                    <span className='indicator-progress' style={{ display: 'block' }}>
+                      Carregando...{' '}
+                      <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                    </span>
+                  )}
                 </button>
+
                 <Link to='/register'>
                   <div className='link-primary'>Ainda não tem uma conta? Criar</div>
                 </Link>
