@@ -1,7 +1,6 @@
 import { onAuthStateChanged } from 'firebase/auth'
-import React, { useEffect, useState } from 'react'
-import { AiFillDelete, AiFillEdit } from 'react-icons/ai'
-import { Navigate } from 'react-router-dom'
+import React, { useState } from 'react'
+
 import styled from 'styled-components'
 import ArticleCard from '../../components/home/ArticleCard'
 import List from '../../components/home/List'

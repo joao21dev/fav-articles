@@ -84,14 +84,17 @@ const ArticleCard = () => {
               </ArticleLink>
             </InfoWrapper>
             <EditButton>
-              <AiFillEdit />
+              <AiFillEdit size={32} color='#f0ad4e' />
             </EditButton>
             <DeleteButton>
-              <AiFillDelete />
+              <AiFillDelete size={32} color='#d9534f' />
             </DeleteButton>
           </Article>
         )
       })}
+      <AddWrapper>
+        <AddButton>Novo Artigo</AddButton>
+      </AddWrapper>
     </>
   )
 }
