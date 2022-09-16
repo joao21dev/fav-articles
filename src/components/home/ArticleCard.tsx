@@ -12,7 +12,7 @@ const Article = styled.div`
   padding: 20px;
 `
 const InfoWrapper = styled.div`
-  width: 80%;
+  width: 85%;
 `
 const ArticleTitle = styled.h1`
   font-size: 24px;
