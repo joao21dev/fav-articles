@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-import { addDoc, collection, getDocs } from 'firebase/firestore'
+import { addDoc, collection, getDocs, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { auth, db } from '../../firebase-config'
 import { IArticleModel } from '../../models/Models'
@@ -62,6 +62,10 @@ const AddButton = styled.div`
     opacity: 0.8;
   }
 `
+const RefreshButton = styled(AddButton)`
+  background-color: #282842;
+  margin-bottom: 10px;
+`
 
 const ArticleInputWrapper = styled(Article)`
   margin-bottom: 10px;
@@ -93,8 +97,30 @@ const ArticleCard = () => {
   const articlesCollectionRef = collection(db, 'articles')
   const [articleName, setArticleName] = useState('')
   const [articleLink, setArticleLink] = useState('')
+  const [articleEditName, setArticleEditName] = useState('')
+  const [articleEditLink, setArticleEditLink] = useState('')
+  const [articleId, setArticleId] = useState('')
 
   const navigate = useNavigate()
+
+  const getArticles = async () => {
+    try {
+      setLoading(true)
+      setTimeout(async () => {
+        const newArticle = {
+          article_name: articleName,
+          article_link: articleLink,
+          user_uid: auth.currentUser?.uid,
+        }
+        const data = await getDocs(articlesCollectionRef)
+        setArticles(data.docs.map((doc) => ({ id: doc.id, ...doc.data() } as IArticleModel)))
+
+        setLoading(false)
+      }, 1000)
+    } catch (error: any) {
+      console.log(error.message)
+    }
+  }
 
   const createArticle = async () => {
     try {
@@ -106,24 +132,41 @@ const ArticleCard = () => {
           user_uid: auth.currentUser?.uid,
         }
         await addDoc(articlesCollectionRef, newArticle)
-        navigate('/')
+
         setLoading(false)
       }, 1000)
     } catch (error: any) {
       console.log(error.message)
     }
+    getArticles()
+  }
+
+  const deleteArticle = async (id: any) => {
+    const userDoc = doc(db, 'articles', id)
+    await deleteDoc(userDoc)
+    getArticles()
+  }
+
+  const getArticleId = (id: any) => {
+    setArticleId(id)
   }
 
   useEffect(() => {
-    const getArticles = async () => {
-      const data = await getDocs(articlesCollectionRef)
-      setArticles(data.docs.map((doc) => ({ id: doc.id, ...doc.data() } as IArticleModel)))
-    }
     getArticles()
   }, [])
 
   return (
     <>
+      <RefreshButton onClick={getArticles}>
+        {' '}
+        {!loading && 'Atualizar Lista'}
+        {loading && (
+          <span className='indicator-progress' style={{ display: 'block' }}>
+            Carregando...{' '}
+            <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+          </span>
+        )}
+      </RefreshButton>
       {articles
         .filter((article) => article.user_uid === `${auth.currentUser?.uid}`)
         .map((article: IArticleModel) => {
@@ -135,10 +178,10 @@ const ArticleCard = () => {
                   {article.article_link}
                 </ArticleLink>
               </InfoWrapper>
-              <EditButton>
+              <EditButton onClick={() => getArticleId(article.id)}>
                 <AiFillEdit size={32} color='#f0ad4e' />
               </EditButton>
-              <DeleteButton>
+              <DeleteButton onClick={() => deleteArticle(article.id)}>
                 <AiFillDelete size={32} color='#d9534f' />
               </DeleteButton>
             </Article>
@@ -148,18 +191,19 @@ const ArticleCard = () => {
         <InfoInputWrapper>
           <ArticleNameInput
             onChange={(e) => setArticleName(e.target.value)}
-            placeholder='Nome do artigo a ser adicionado'
+            placeholder={'Nome do artigo a ser adicionado'}
           />
           <ArticleLinkInput
             onChange={(e) => setArticleLink(e.target.value)}
-            placeholder='Link do artigo a ser adicionado'
+            placeholder={'Link do artigo a ser adicionado'}
           />
         </InfoInputWrapper>
       </ArticleInputWrapper>
       <AddWrapper>
         <AddButton onClick={createArticle}>
           {' '}
-          {!loading && 'Salvar Artigo'}
+          {!loading && !articleId && 'Salvar Artigo'}
+          {!loading && articleId && 'Editar Artigo'}
           {loading && (
             <span className='indicator-progress' style={{ display: 'block' }}>
               Carregando...{' '}
