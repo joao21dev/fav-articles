@@ -6,10 +6,13 @@ import Home from '../pages/Home'
 function MainLyoutRoutes() {
   return (
     <>
-      <Sidebar />
-      <Routes>
-        <Route path='/' element={<Home />} />
-      </Routes>
+      <div style={{ display: 'flex' }}>
+        <Sidebar />
+
+        <Routes>
+          <Route path='/' element={<Home />} />
+        </Routes>
+      </div>
     </>
   )
 }
