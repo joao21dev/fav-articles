@@ -9,7 +9,7 @@ import { auth } from '../../firebase-config'
 import { Button } from 'react-bootstrap'
 
 const SidebarNav = styled.div<{ sidebar: boolean }>`
-  background-color: #0064ff;
+  background-color: #8c8eee;
   width: 250px;
   height: 100vh;
   top: 0;
@@ -20,8 +20,9 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: flex-start;
   &:hover {
-    background-color: #035ae0;
+    background-color: #3638b8;
     text-decoration: none;
+    color: white;
   }
 `
 
