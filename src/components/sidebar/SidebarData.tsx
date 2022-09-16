@@ -1,5 +1,5 @@
-import { ISidebarItem } from '../../models/SidebarItemModel'
 import { AiFillHome } from 'react-icons/ai'
+import { ISidebarItem } from '../../models/Models'
 
 export const SidebarData: ISidebarItem[] = [
   {

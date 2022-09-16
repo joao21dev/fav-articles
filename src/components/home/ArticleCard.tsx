@@ -1,6 +1,9 @@
-import React from 'react'
+import { collection, getDocs } from 'firebase/firestore'
+import React, { useEffect } from 'react'
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai'
 import styled from 'styled-components'
+import { db } from '../../firebase-config'
+import { IArticleModel } from '../../models/Models'
 
 const Article = styled.div`
   display: flex;
@@ -58,25 +61,37 @@ const AddButton = styled.div`
 `
 
 const ArticleCard = () => {
+  const [articles, setArticles] = React.useState<IArticleModel[]>([])
+  const articlesCollectionRef = collection(db, 'articles')
+
+  useEffect(() => {
+    const getArticles = async () => {
+      const data = await getDocs(articlesCollectionRef)
+      setArticles(data.docs.map((doc) => ({ id: doc.id, ...doc.data() } as IArticleModel)))
+    }
+    getArticles()
+  }, [])
+
   return (
     <>
-      <Article>
-        <InfoWrapper>
-          <ArticleTitle>Redux x Zustand</ArticleTitle>
-          <ArticleLink href='https://stackshare.io/stackups/reduxjs-vs-zustand' target='_blank'>
-            https://stackshare.io/stackups/reduxjs-vs-zustand
-          </ArticleLink>
-        </InfoWrapper>
-        <EditButton>
-          <AiFillEdit size={32} color='#f0ad4e' />
-        </EditButton>
-        <DeleteButton>
-          <AiFillDelete size={32} color='#d9534f' />
-        </DeleteButton>
-      </Article>
-      <AddWrapper>
-        <AddButton>Novo Artigo</AddButton>
-      </AddWrapper>
+      {articles.map((article: IArticleModel) => {
+        return (
+          <Article key={article.id}>
+            <InfoWrapper>
+              <ArticleTitle>{article.article_name}</ArticleTitle>
+              <ArticleLink href={article.article_link} target='_blank'>
+                {article.article_link}
+              </ArticleLink>
+            </InfoWrapper>
+            <EditButton>
+              <AiFillEdit />
+            </EditButton>
+            <DeleteButton>
+              <AiFillDelete />
+            </DeleteButton>
+          </Article>
+        )
+      })}
     </>
   )
 }

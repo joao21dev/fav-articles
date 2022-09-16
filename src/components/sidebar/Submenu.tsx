@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { ISidebarItem } from '../../models/SidebarItemModel'
 import styled from 'styled-components'
+import { ISidebarItem } from '../../models/Models'
 
 type SidebarLinkProps = {
   item: ISidebarItem
