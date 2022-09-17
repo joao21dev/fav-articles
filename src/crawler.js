@@ -5,7 +5,7 @@ const axios = require('axios')
 const cheerio = require('cheerio')
 const fs = require('fs')
 
-export const getArticles = async () => {
+const getArticles = async () => {
   try {
     const { data } = await axios.get('https://www.showmetech.com.br/noticias/')
     const $ = cheerio.load(data)
