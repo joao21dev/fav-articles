@@ -5,8 +5,6 @@ import {
   getDocs,
   deleteDoc,
   doc,
-  getDoc,
-  setDoc,
   updateDoc,
 } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
