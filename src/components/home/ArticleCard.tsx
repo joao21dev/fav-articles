@@ -1,5 +1,14 @@
 /* eslint-disable camelcase */
-import { addDoc, collection, getDocs, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -139,6 +148,26 @@ const ArticleCard = () => {
       console.log(error.message)
     }
     getArticles()
+    reset()
+  }
+
+  const editArticle = async () => {
+    try {
+      setLoading(true)
+      setTimeout(async () => {
+        await updateDoc(doc(db, 'articles', articleId), {
+          article_name: articleName,
+          article_link: articleLink,
+          user_id: auth.currentUser?.uid,
+        })
+        console.log('articleId', articleId)
+        setLoading(false)
+      }, 1000)
+    } catch (error: any) {
+      console.log(error.message)
+    }
+    getArticles()
+    reset()
   }
 
   const deleteArticle = async (id: any) => {
@@ -147,8 +176,16 @@ const ArticleCard = () => {
     getArticles()
   }
 
-  const getArticleId = (id: any) => {
+  const getArticleId = (id: any, name: string, link: string) => {
     setArticleId(id)
+    setArticleName(name)
+    setArticleLink(link)
+  }
+
+  const reset = () => {
+    setArticleName('')
+    setArticleLink('')
+    setArticleId('')
   }
 
   useEffect(() => {
@@ -178,7 +215,9 @@ const ArticleCard = () => {
                   {article.article_link}
                 </ArticleLink>
               </InfoWrapper>
-              <EditButton onClick={() => getArticleId(article.id)}>
+              <EditButton
+                onClick={() => getArticleId(article.id, article.article_name, article.article_link)}
+              >
                 <AiFillEdit size={32} color='#f0ad4e' />
               </EditButton>
               <DeleteButton onClick={() => deleteArticle(article.id)}>
@@ -190,17 +229,19 @@ const ArticleCard = () => {
       <ArticleInputWrapper>
         <InfoInputWrapper>
           <ArticleNameInput
+            value={articleName}
             onChange={(e) => setArticleName(e.target.value)}
-            placeholder={'Nome do artigo a ser adicionado'}
+            placeholder={articleId ? articleName : 'Nome do artigo a ser adicionado'}
           />
           <ArticleLinkInput
+            value={articleLink}
             onChange={(e) => setArticleLink(e.target.value)}
-            placeholder={'Link do artigo a ser adicionado'}
+            placeholder={articleId ? articleLink : 'Link do artigo a ser adicionado'}
           />
         </InfoInputWrapper>
       </ArticleInputWrapper>
       <AddWrapper>
-        <AddButton onClick={createArticle}>
+        <AddButton onClick={!articleId ? createArticle : editArticle}>
           {' '}
           {!loading && !articleId && 'Salvar Artigo'}
           {!loading && articleId && 'Editar Artigo'}
