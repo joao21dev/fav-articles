@@ -1,4 +1,5 @@
-export const ArticlesData = [
+/* eslint-disable quotes */
+export const TrendingData = [
   {
     title: 'Xiaomi 12T e 12T Pro têm imagens e especificações vazadas',
     link: 'https://www.showmetech.com.br/linha-xiaomi-12t-tem-especificacoes-vazadas/',

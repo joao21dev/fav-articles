@@ -2,7 +2,7 @@
 import { addDoc, collection } from 'firebase/firestore'
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { ArticlesData } from '../../articlesData'
+import { TrendingData } from '../../articlesData'
 import { auth, db } from '../../firebase-config'
 
 const Article = styled.div`
@@ -73,7 +73,7 @@ const TrendingArticles = () => {
   return (
     <>
       {' '}
-      {ArticlesData.map((article, index) => {
+      {TrendingData.map((article, index) => {
         return (
           <Article key={index}>
             <InfoWrapper>

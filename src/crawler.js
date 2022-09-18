@@ -16,7 +16,8 @@ const getArticles = async () => {
       const articleLink = $(el).find('h2.cs-entry__title a').attr('href')
       articlesList.push({ title: articleName, link: articleLink })
     })
-    fs.appendFile('articlesData.json', JSON.stringify(articlesList, null, 2), function (err) {
+    const articlesData = 'export const TrendingData =' + JSON.stringify(articlesList, null, 1)
+    fs.appendFile('articlesData.js', articlesData, function (err) {
       if (err) throw err
       console.log('Arquivo salvo com sucesso!')
     })
