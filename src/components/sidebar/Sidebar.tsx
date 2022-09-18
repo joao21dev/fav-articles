@@ -1,19 +1,16 @@
 import React, { FC, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai'
 import { SidebarData } from './SidebarData'
 import Submneu from './Submenu'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebase-config'
-import { Button } from 'react-bootstrap'
 
-const SidebarNav = styled.div<{ sidebar: boolean }>`
+const SidebarNav = styled.div`
   background-color: #8c8eee;
   width: 250px;
-  height: 100vh;
+  min-height: 100vh;
   top: 0;
-  left: ${({ sidebar }) => (sidebar ? '0' : '-100%')};
 `
 const SidebarWrap = styled.div`
   height: 80%;
@@ -30,6 +27,8 @@ const Wrapper = styled.div`
   }
 `
 const LogoutButton = styled.div`
+  position: fixed;
+  top: 80vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,7 +46,6 @@ const LogoutButton = styled.div`
 `
 
 const Sidebar: FC = () => {
-  const [sidebar, setSidebar] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
@@ -67,7 +65,7 @@ const Sidebar: FC = () => {
 
   return (
     <>
-      <SidebarNav sidebar={sidebar}>
+      <SidebarNav>
         <SidebarWrap>
           {SidebarData.map((item, index) => {
             return (

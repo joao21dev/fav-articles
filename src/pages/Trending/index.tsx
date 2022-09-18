@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import TrendingArticles from '../../components/trending/TrendingArticles'
 
 const Container = styled.section`
   display: flex;
@@ -17,6 +18,7 @@ const Trending = () => {
   return (
     <Container>
       <Title>Artigos em alta</Title>
+      <TrendingArticles />
     </Container>
   )
 }
