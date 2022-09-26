@@ -1,17 +1,10 @@
 /* eslint-disable camelcase */
-import {
-  addDoc,
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
-} from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai'
 import { Navigate, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { auth, db } from '../../firebase-config'
+import { useArticles } from '../../context/ArticleContext'
+import { useAuth } from '../../context/AuthContext'
 import { IArticleModel } from '../../models/Models'
 
 const Article = styled.div`
@@ -101,77 +94,61 @@ const ArticleLinkInput = styled(ArticleNameInput)`
 const ArticleCard = () => {
   const [articles, setArticles] = useState<IArticleModel[]>([])
   const [loading, setLoading] = useState(false)
-  const articlesCollectionRef = collection(db, 'articles')
   const [articleName, setArticleName] = useState('')
   const [articleLink, setArticleLink] = useState('')
-  const [articleEditName, setArticleEditName] = useState('')
-  const [articleEditLink, setArticleEditLink] = useState('')
   const [articleId, setArticleId] = useState('')
+  const { getArticles, deleteArticle, registerArticle, editArticle } = useArticles()
+  const { user } = useAuth()
+  const [error, setError] = useState('')
 
-  const navigate = useNavigate()
+  const fetchData = async () => {
+    const data = await getArticles()
+    setArticles(data)
+  }
 
-  const getArticles = async () => {
+  const handleRegister = async () => {
     try {
       setLoading(true)
       setTimeout(async () => {
-        const newArticle = {
-          article_name: articleName,
-          article_link: articleLink,
-          user_uid: auth.currentUser?.uid,
-        }
-        const data = await getDocs(articlesCollectionRef)
-        setArticles(data.docs.map((doc) => ({ id: doc.id, ...doc.data() } as IArticleModel)))
-
+        await registerArticle(articleLink, articleName)
+        getArticles()
+        reset()
         setLoading(false)
       }, 1000)
-    } catch (error: any) {
-      console.log(error.message)
+    } catch (e: any) {
+      setError(e.message)
+      console.log(e.message)
     }
   }
 
-  const createArticle = async () => {
+  const handleEdit = (articleId: string, articleName: string, articleLink: string) => {
     try {
       setLoading(true)
       setTimeout(async () => {
-        const newArticle = {
-          article_name: articleName,
-          article_link: articleLink,
-          user_uid: auth.currentUser?.uid,
-        }
-        await addDoc(articlesCollectionRef, newArticle)
+        await editArticle(articleId, articleLink, articleName)
 
+        reset()
         setLoading(false)
+        window.location.href = '/'
       }, 1000)
-    } catch (error: any) {
-      console.log(error.message)
+    } catch (e: any) {
+      setError(e.message)
+      console.log(e.message)
     }
-    getArticles()
-    reset()
   }
 
-  const editArticle = async () => {
+  const handleDelete = async (articleId: string | undefined) => {
     try {
       setLoading(true)
       setTimeout(async () => {
-        await updateDoc(doc(db, 'articles', articleId), {
-          article_name: articleName,
-          article_link: articleLink,
-          user_id: auth.currentUser?.uid,
-        })
-        console.log('articleId', articleId)
+        await deleteArticle(articleId)
         setLoading(false)
+        window.location.href = '/'
       }, 1000)
-    } catch (error: any) {
-      console.log(error.message)
+    } catch (e: any) {
+      setError(e.message)
+      console.log(e.message)
     }
-    getArticles()
-    reset()
-  }
-
-  const deleteArticle = async (id: any) => {
-    const userDoc = doc(db, 'articles', id)
-    await deleteDoc(userDoc)
-    getArticles()
   }
 
   const getArticleId = (id: any, name: string, link: string) => {
@@ -187,12 +164,12 @@ const ArticleCard = () => {
   }
 
   useEffect(() => {
-    getArticles()
+    fetchData()
   }, [])
 
   return (
     <>
-      <RefreshButton onClick={getArticles}>
+      <RefreshButton onClick={() => (window.location.href = '/')}>
         {' '}
         {!loading && 'Atualizar Lista'}
         {loading && (
@@ -203,7 +180,7 @@ const ArticleCard = () => {
         )}
       </RefreshButton>
       {articles
-        .filter((article) => article.user_uid === `${auth.currentUser?.uid}`)
+        .filter((article) => article.user_uid === user.uid)
         .map((article: IArticleModel) => {
           return (
             <Article key={article.id}>
@@ -218,7 +195,7 @@ const ArticleCard = () => {
               >
                 <AiFillEdit size={32} color='#f0ad4e' />
               </EditButton>
-              <DeleteButton onClick={() => deleteArticle(article.id)}>
+              <DeleteButton onClick={() => handleDelete(article.id)}>
                 <AiFillDelete size={32} color='#d9534f' />
               </DeleteButton>
             </Article>
@@ -239,7 +216,11 @@ const ArticleCard = () => {
         </InfoInputWrapper>
       </ArticleInputWrapper>
       <AddWrapper>
-        <AddButton onClick={!articleId ? createArticle : editArticle}>
+        <AddButton
+          onClick={
+            !articleId ? handleRegister : () => handleEdit(articleId, articleLink, articleName)
+          }
+        >
           {' '}
           {!loading && !articleId && 'Salvar Artigo'}
           {!loading && articleId && 'Editar Artigo'}

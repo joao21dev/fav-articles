@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import ArticleCard from '../../components/home/ArticleCard'
 import List from '../../components/home/List'
+import { useAuth } from '../../context/AuthContext'
 import { auth } from '../../firebase-config'
 
 const Container = styled.section`
@@ -19,11 +20,7 @@ const Title = styled.h1`
 `
 
 const Home = () => {
-  const [user, setUser] = useState<any>({})
-
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser)
-  })
+  const { user } = useAuth()
 
   return (
     <Container>

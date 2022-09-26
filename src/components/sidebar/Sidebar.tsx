@@ -5,6 +5,7 @@ import { SidebarData } from './SidebarData'
 import Submneu from './Submenu'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebase-config'
+import { useAuth } from '../../context/AuthContext'
 
 const SidebarNav = styled.div`
   background-color: #8c8eee;
@@ -46,20 +47,21 @@ const LogoutButton = styled.div`
 `
 
 const Sidebar: FC = () => {
-  const [loading, setLoading] = useState(false)
-
+  const { logout } = useAuth()
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
 
   const handleLogout = async () => {
     try {
       setLoading(true)
       setTimeout(async () => {
-        await signOut(auth)
+        await logout()
         navigate('/login')
+        console.log('You are logged out')
         setLoading(false)
       }, 1000)
-    } catch (error: any) {
-      console.log(error.message)
+    } catch (e: any) {
+      console.log(e.message)
     }
   }
 

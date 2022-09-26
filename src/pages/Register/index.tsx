@@ -2,24 +2,29 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../firebase-config'
+import { useAuth } from '../../context/AuthContext'
 
 const Register = () => {
   const [registerEmail, setRegisterEmail] = useState('')
   const [registerPassword, setRegisterPassword] = useState('')
   const [loading, setLoading] = useState(false)
-
+  const [error, setError] = useState('')
+  const { register } = useAuth()
   const navigate = useNavigate()
 
-  const handleRegister = () => {
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    setError('')
     try {
       setLoading(true)
       setTimeout(async () => {
-        await createUserWithEmailAndPassword(auth, registerEmail, registerPassword)
+        await register(registerEmail, registerPassword)
         navigate('/')
         setLoading(false)
       }, 1000)
-    } catch (error: any) {
-      console.log(error.message)
+    } catch (e: any) {
+      setError(e.message)
+      console.log(e.message)
     }
   }
   return (
@@ -30,8 +35,6 @@ const Register = () => {
             <div className='card shadow-2-strong' style={{ borderRadius: '1rem' }}>
               <div className='card-body p-5 text-center'>
                 <h3 className='mb-5'>Acessar Fav-Articles</h3>
-                {auth.currentUser?.email}
-
                 <div className='form-outline mb-4'>
                   <label className='form-label' htmlFor='email'>
                     Email
@@ -61,7 +64,7 @@ const Register = () => {
                 </div>
 
                 <button
-                  onClick={handleRegister}
+                  onClick={handleSubmit}
                   className='btn btn-primary btn-lg btn-block mb-4'
                   type='submit'
                 >

@@ -1,28 +1,31 @@
-import { signInWithEmailAndPassword } from 'firebase/auth'
 import React, { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import { auth } from '../../firebase-config'
 
 const Login = () => {
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
   const [loading, setLoading] = useState(false)
-
+  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { login } = useAuth()
 
-  const handleLogin = async () => {
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    setError('')
     try {
       setLoading(true)
       setTimeout(async () => {
-        await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+        await login(loginEmail, loginPassword)
         navigate('/')
         setLoading(false)
       }, 1000)
-    } catch (error: any) {
-      console.log(error.message)
+    } catch (e: any) {
+      setError(e.message)
+      console.log(e.message)
     }
   }
-
 
   return (
     <section className='vh-100'>
@@ -62,7 +65,7 @@ const Login = () => {
                 </div>
 
                 <button
-                  onClick={handleLogin}
+                  onClick={handleSubmit}
                   className='btn btn-primary btn-lg btn-block mb-4'
                   type='submit'
                 >
