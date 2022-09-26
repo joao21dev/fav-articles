@@ -1,46 +1,48 @@
-# Getting Started with Create React App
+# Devnology - Teste Programa de Trainee
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Projeto desenvolvido para o desafio Devnology - Teste Programa de Trainee.
 
-## Available Scripts
+O que foi pedido: 
+Você deve construir um sistema para salvar links de artigos de tecnologia. 
+- Desenvolva uma API gerenciar links, com a URL e um título/label. Os links também podem ser editados e excluídos.
+- Construa uma interface, como quiser, para que um usuário possa ver e gerenciar os links manualmente
+- Automatize este processo de salvar links com um web crawler que importe artigos de seus blogs favoritos, como a [devGo](https://devgo.com.br/).
+- Hospede sua aplicação em algum servidor.
 
-In the project directory, you can run:
 
-### `yarn start`
+O que foi entregue: O usuário consegue criar e logar com sua conta. Toda a autenticação foi feita utilizando [Firebase Auth](https://firebase.google.com/firebase/authentication
+). Após logado a primeira página mostra um lista de artigos existentes (nome do artigo e link do artigo) adicionados pelo usuário e um input para criar novos artigos. Os artigos criados são salvos numa collection do firebase chamada articles que possui três fields: article_name, article_link e user_uid (id do usuário logado que criou o artigo). A outra página chamada Trending se refere a segunda parte do projeto, onde deveria ser criado um web crawler para mostrar artigos novos de blogs favoritos do usuário. Acabei fahando nessa parte, consegui criar o script usando o cheerio, retornando uma lista de artigos (título e url) do site https://www.showmetech.com.br/noticias/ e os colocando em uma nova file chamada articlesData.js, mas ficou faltando subir essa funcionalidade, pois só está rodando localmente. Já rodei o script então esse arquivo já existe e fornece os dados para página Trending. O usuário pode adicionar automaticmanete arquivos a partir dessa lista na pagina trending. Além de criar novos artigos o usuário também pode editar e deletar os seus artigos.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Desenvolvimento
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Desenvolvido com
+- React
+- Styled Components
+- [Firebase](https://firebase.google.com/firebase) (Firestore, Auth, Hosting)
 
-### `yarn test`
+### Pré-requisitos
+Antes de começar, você vai precisar ter instalado em sua máquina as seguintes ferramentas:
+[git](https://git-scm.com) e [node.js](https://nodejs.org/en/).
+Você também vai precisar de um editor de código, recomendo o [VS Code](https://code.visualstudio.com/).
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Rodando o projeto:
 
-### `yarn build`
+```shell
+# Clone este repositório (ou download )
+$ git clone git@github.com:joao21dev/fav-articles.git
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Acesse a pasta do projeto no terminal/cmd
+$ cd fav-articles/
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Abra a pasta no editor de código (VS Code ou outro de sua preferência).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Instale as dependências
+$ yarn install
 
-### `yarn eject`
+# Após a instalação, execute o comando para rodar a aplicação
+$ yarn start
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+# Para rodar o web crawler:
+$ cd src/
+$ node crawler.js
+```
